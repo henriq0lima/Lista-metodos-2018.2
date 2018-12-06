@@ -1,0 +1,48 @@
+library(tidyverse)
+library(readxl)
+library(DescTools)
+
+#xercicio 3
+tabela = read_xls('Banco Escalas Psicologia.xls',na="999")
+tabela1 = tabela%>%filter(Grupo<=2)
+tabela1$Grupo = factor(tabela1$Grupo)
+      #VERIFICANDO HIPOTESES
+
+#Normalidade
+      #analise descritiva
+graf3 = ggplot(data = tabela1,
+       aes(sample = Idade)) +
+  stat_qq() + stat_qq_line();graf3  
+graf3 + facet_grid(Grupo~.)
+      #analise do teste
+a0 = filter(tabela,Grupo==0)$Idade
+a1 = filter(tabela,Grupo==1)$Idade
+a2 = filter(tabela,Grupo==2)$Idade
+ks.test(a0,"pnorm",mean=median(a0),sd=sd(a0))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 0 venha de normal
+ks.test(a1,"pnorm",mean=median(a1),sd=sd(a1))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 1 venha de normal
+ks.test(a2,"pnorm",mean=median(a2),sd=sd(a2))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 2 venha de normal
+
+#Homocedasticidade
+      #analise descritiva
+ggplot(tabela1,aes(x=Grupo,y=Idade))+geom_boxplot()
+tabela1 %>% group_by(Grupo) %>% summarise(desvio=sd(Idade))
+      #analise pelo teste
+LeveneTest(tabela1$Idade,tabela1$Grupo,center = "mean")
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo possual alguma diferença
+# nas variancias
+
+#Independicia
+#Verificada pelo enunciado da questao
+
+    #TESTE PARA A MEDIADS DAS IDADES USANDO AOV
+comparacao = aov(Idade~Grupo,data=tabela1)
+summary(comparacao)
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#a igualdade entre 
