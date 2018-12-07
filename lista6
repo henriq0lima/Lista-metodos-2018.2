@@ -6,15 +6,15 @@ library(DescTools)
 tabela = read_xls('Banco Escalas Psicologia.xls',na="999")
 tabela1 = tabela%>%filter(Grupo<=2)
 tabela1$Grupo = factor(tabela1$Grupo)
-      #VERIFICANDO HIPOTESES
+#VERIFICANDO HIPOTESES
 
 #Normalidade
-      #analise descritiva
+#analise descritiva
 graf3 = ggplot(data = tabela1,
-       aes(sample = Idade)) +
+               aes(sample = Idade)) +
   stat_qq() + stat_qq_line();graf3  
 graf3 + facet_grid(Grupo~.)
-      #analise do teste
+#analise do teste
 a0 = filter(tabela,Grupo==0)$Idade
 a1 = filter(tabela,Grupo==1)$Idade
 a2 = filter(tabela,Grupo==2)$Idade
@@ -29,10 +29,10 @@ ks.test(a2,"pnorm",mean=median(a2),sd=sd(a2))
 #que a amostra do grupo 2 venha de normal
 
 #Homocedasticidade
-      #analise descritiva
+#analise descritiva
 ggplot(tabela1,aes(x=Grupo,y=Idade))+geom_boxplot()
 tabela1 %>% group_by(Grupo) %>% summarise(desvio=sd(Idade))
-      #analise pelo teste
+#analise pelo teste
 LeveneTest(tabela1$Idade,tabela1$Grupo,center = "mean")
 #Utilizando um nivel de significancia de 5% nao rejeitamos
 #que a amostra do grupo possual alguma diferença
@@ -41,8 +41,16 @@ LeveneTest(tabela1$Idade,tabela1$Grupo,center = "mean")
 #Independicia
 #Verificada pelo enunciado da questao
 
-    #TESTE PARA A MEDIADS DAS IDADES USANDO AOV
+#TESTE PARA A MEDIADS DAS IDADES USANDO AOV
 comparacao = aov(Idade~Grupo,data=tabela1)
 summary(comparacao)
 #Utilizando um nivel de significancia de 5% nao rejeitamos
 #a igualdade entre 
+
+#B
+#vamos analisar por teste de independencia se realmente
+#existe relacao entre grupos e generos
+#ANALISE DESCRITIVA
+tabela1 %>% group_by(Grupo,Sexo) %>% summarise(n())
+a0 = table(tabela1$Grupo,tabela1$Sexo);a0
+a1 = round(prop.table(a0),3);a1
