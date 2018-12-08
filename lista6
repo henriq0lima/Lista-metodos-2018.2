@@ -2,6 +2,8 @@ library(tidyverse)
 library(readxl)
 library(DescTools)
 
+setwd('C:/Users/Henrique/Google Drive/Uff/Disciplinas/Metodos Computacionais/Exercicios/lista06')
+
 #xercicio 3
 tabela = read_xls('Banco Escalas Psicologia.xls',na="999")
 tabela1 = tabela%>%filter(Grupo<=2)
@@ -52,5 +54,239 @@ summary(comparacao)
 #existe relacao entre grupos e generos
 #ANALISE DESCRITIVA
 tabela1 %>% group_by(Grupo,Sexo) %>% summarise(n())
-a0 = table(tabela1$Grupo,tabela1$Sexo);a0
-a1 = round(prop.table(a0),3);a1
+#freq observadoas
+mo = table(tabela1$Grupo,tabela1$Sexo);mo=matrix(mo,ncol = 2)
+#freq esperadas
+s1=sum(mo[,1])/214
+s2=sum(mo[,2])/214
+s3=sum(mo[1,])/214
+s4=sum(mo[2,])/214
+s5=sum(mo[3,])/214
+m1=matrix(c(s1,s2),ncol = 2)
+m2=matrix(c(s3,s4,s5),ncol = 1)
+me=round(m2%*%m1,3)*214
+#diferença esperada com observada
+mo-me
+#teste de independencia
+chisq.test(mo,correct = F)
+#utilizando um nivel de significancia de 5% nao rejeitmas
+#a hipotese de indepencia das variaveis sexo e Grupo 
+
+#C
+#Vamos analizar pelo testo da anova a sua
+#semelhança mas precisamvos verificar algumas hipoteses
+#VERIFICANDO HIPOTESES
+
+tabela1$Anos_escolaridade
+#Normalidade
+#analise descritiva
+graf3 = ggplot(data = tabela1,
+               aes(sample = Anos_escolaridade)) +
+  stat_qq() + stat_qq_line();graf3  
+graf3 + facet_grid(Grupo~.)
+#analise do teste
+a0 = filter(tabela,Grupo==0)$Idade
+a1 = filter(tabela,Grupo==1)$Idade
+a2 = filter(tabela,Grupo==2)$Idade
+ks.test(a0,"pnorm",mean=median(a0),sd=sd(a0))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 0 venha de normal
+ks.test(a1,"pnorm",mean=median(a1),sd=sd(a1))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 1 venha de normal
+ks.test(a2,"pnorm",mean=median(a2),sd=sd(a2))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 2 venha de normal
+
+#Homocedasticidade
+#analise descritiva
+ggplot(tabela1,aes(x=Grupo,y=Anos_escolaridade))+geom_boxplot()
+tabela1 %>% group_by(Grupo) %>% summarise(desvio=sd(Anos_escolaridade,na.rm=T))
+#analise pelo teste
+LeveneTest(tabela1$Idade,tabela1$Grupo,center = "mean")
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo possual alguma diferença
+# nas variancias
+
+#Independicia
+#Verificada pelo enunciado da questao
+
+#TESTE PARA A MEDIADS DAS IDADES USANDO AOV
+comparacao = aov(Anos_escolaridade~Grupo,data=tabela1)
+summary(comparacao)
+#Utilizando um nivel de significancia de 5% rejeitamos
+#a igualdade entre as medias Anos_escolaridade,
+#vamos entao buscar quem é a diferente
+
+PostHocTest(comparacao,method = "bonferroni")
+#a indicios com nivel de significancia de 5% que 
+#a medias do grupo 2 ee 0 saaoo ddiferentes
+
+
+
+#D
+#Vamos analizar pelo testo da anova a sua
+#semelhança mas precisamvos verificar algumas hipoteses
+#VERIFICANDO HIPOTESES
+
+tabela1$QI
+#Normalidade
+#analise descritiva
+graf3 = ggplot(data = tabela1,
+               aes(sample = QI)) +
+  stat_qq() + stat_qq_line();graf3  
+graf3 + facet_grid(Grupo~.)
+#analise do teste
+a0 = filter(tabela,Grupo==0)$Idade
+a1 = filter(tabela,Grupo==1)$Idade
+a2 = filter(tabela,Grupo==2)$Idade
+ks.test(a0,"pnorm",mean=median(a0),sd=sd(a0))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 0 venha de normal
+ks.test(a1,"pnorm",mean=median(a1),sd=sd(a1))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 1 venha de normal
+ks.test(a2,"pnorm",mean=median(a2),sd=sd(a2))
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo 2 venha de normal
+
+#Homocedasticidade
+#analise descritiva
+ggplot(tabela1,aes(x=Grupo,y=QI))+geom_boxplot()
+tabela1 %>% group_by(Grupo) %>% summarise(desvio=sd(QI,na.rm=T))
+#analise pelo teste
+LeveneTest(tabela1$Idade,tabela1$Grupo,center = "mean")
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo possual alguma diferença
+# nas variancias
+
+#Independicia
+#Verificada pelo enunciado da questao
+
+#TESTE PARA A MEDIADS DAS IDADES USANDO AOV
+comparacao = aov(QI~Grupo,data=tabela1)
+summary(comparacao)
+#Utilizando um nivel de significancia de 5% rejeitamos
+#a igualdade entre as medias QI,
+#vamos entao buscar quem é a diferente
+
+PostHocTest(comparacao,method = "bonferroni")
+#a indicios com nivel de significancia de 5% que 
+#a medias do grupo 2 ee 0 saaoo ddiferentes
+
+
+#E
+#Vamos analizar pelo testo da anova a sua
+#semelhança mas precisamvos verificar algumas hipoteses
+#VERIFICANDO HIPOTESES
+tabela1$RAVLT
+tabela1$WCST
+tabela1$Stroop
+tabela1$Digitos 
+tabela1$`Reproduçao Visual`
+#Normalidade
+#analise descritiva
+filtro = function(base,vari = NA){
+  tabela1 = filter(base,!is.na(vari))
+  return(tabela1)
+}
+View()
+View(filtro(tabela1,var="RAVLT"))
+
+graf3.1 = ggplot(data = filter(tabela1,!is.na(RAVLT)),  
+               aes(sample = RAVLT)) +
+  stat_qq() + stat_qq_line();graf3.1  
+graf3.1 + facet_grid(Grupo~.)
+
+graf3.2 = ggplot(data = filter(tabela1,!is.na(WCST)),
+               aes(sample = WCST)) +
+  stat_qq() + stat_qq_line();graf3.2  
+graf3.2 + facet_grid(Grupo~.)
+
+graf3.3 = ggplot(data = filter(tabela1,!is.na(Stroop)),
+               aes(sample = Stroop)) +
+  stat_qq() + stat_qq_line();graf3.3  
+graf3.3 + facet_grid(Grupo~.)
+
+graf3.4 = ggplot(data = filter(tabela1,!is.na(Stroop)),
+               aes(sample = Digitos)) +
+  stat_qq() + stat_qq_line();graf3.4  
+graf3.4 + facet_grid(Grupo~.)
+
+graf3.5 = ggplot(data = filter(tabela1,!is.na(`Reproduçao Visual`)),
+               aes(sample = `Reproduçao Visual`)) +
+  stat_qq() + stat_qq_line();graf3.5  
+graf3.5 + facet_grid(Grupo~.)
+
+#analise do teste
+tabela1$RAVLT
+tabela1$WCST
+tabela1$Stroop
+tabela1$Digitos
+tabela1$`Reproduçao Visual`
+a0.1 = filter(tabela,Grupo==0)$RAVLT
+a1.1 = filter(tabela,Grupo==1)$RAVLT
+a2.1 = filter(tabela,Grupo==2)$RAVLT
+
+a0.2 = filter(tabela,Grupo==0)$WCST
+a1.2 = filter(tabela,Grupo==1)$WCST
+a2.2 = filter(tabela,Grupo==2)$WCST
+
+a0.3 = filter(tabela,Grupo==0)$Stroop
+a1.3 = filter(tabela,Grupo==1)$Stroop
+a2.3 = filter(tabela,Grupo==2)$Stroop
+
+a0.4 = filter(tabela,Grupo==0)$Digitos
+a1.4 = filter(tabela,Grupo==1)$Digitos
+a2.4 = filter(tabela,Grupo==2)$Digitos
+
+a0.5 = filter(tabela,Grupo==0)$`Reproduçao Visual`
+a1.5 = filter(tabela,Grupo==1)$`Reproduçao Visual`
+a2.5 = filter(tabela,Grupo==2)$`Reproduçao Visual`
+
+
+ks.test(a0.1,"pnorm",mean=median(a0.1,na.rm=T),sd=sd(a0.1,na.rm=T))
+ks.test(a1.1,"pnorm",mean=median(a1.1,na.rm=T),sd=sd(a1.1,na.rm=T))
+ks.test(a2.1,"pnorm",mean=median(a2.1,na.rm=T),sd=sd(a2.1,na.rm=T))
+#rejeitado a normalidade da pontuacao WCST
+
+ks.test(a0.2,"pnorm",mean=median(a0.2,na.rm=T),sd=sd(a0.2,na.rm=T))
+ks.test(a1.2,"pnorm",mean=median(a1.2,na.rm=T),sd=sd(a1.2,na.rm=T))
+ks.test(a2.2,"pnorm",mean=median(a2.2,na.rm=T),sd=sd(a2.2,na.rm=T))
+#rejeitado a normalidade da pontuacao Stroop
+
+ks.test(a0.3,"pnorm",mean=median(a0.3,na.rm=T),sd=sd(a0.3,na.rm=T))
+ks.test(a1.3,"pnorm",mean=median(a1.3,na.rm=T),sd=sd(a1.3,na.rm=T))
+ks.test(a2.3,"pnorm",mean=median(a2.3,na.rm=T),sd=sd(a2.3,na.rm=T))
+
+ks.test(a0.4,"pnorm",mean=median(a0.4,na.rm=T),sd=sd(a0.4,na.rm=T))
+ks.test(a1.4,"pnorm",mean=median(a1.4,na.rm=T),sd=sd(a1.4,na.rm=T))
+ks.test(a2.4,"pnorm",mean=median(a2.4,na.rm=T),sd=sd(a2.4,na.rm=T))
+#rejeitado a normalidade da pontuacao Digitos
+
+ks.test(a0.5,"pnorm",mean=median(a0.5,na.rm=T),sd=sd(a0.5,na.rm=T))
+ks.test(a1.5,"pnorm",mean=median(a1.5,na.rm=T),sd=sd(a1.5,na.rm=T))
+ks.test(a2.5,"pnorm",mean=median(a2.5,na.rm=T),sd=sd(a2.5,na.rm=T))
+#rejeitado a normalidade da pontuacao `Reproduçao Visual`
+
+#Homocedasticidade
+#analise descritiva
+ggplot(tabela1,aes(x=Grupo,y=RAVLT))+geom_boxplot()
+tabela1 %>% group_by(Grupo) %>% summarise(desvio=sd(RAVLT,na.rm=T))
+#analise pelo teste
+LeveneTest(tabela1$RAVLT,tabela1$Grupo,center = "mean")
+#Utilizando um nivel de significancia de 5% nao rejeitamos
+#que a amostra do grupo possual alguma diferença
+# nas variancias
+
+#Independicia
+#Verificada pelo enunciado da questao
+
+#TESTE PARA A MEDIADS DAS IDADES USANDO AOV
+comparacao = aov(RAVLT~Grupo,data=tabela1)
+summary(comparacao)
+#Utilizando um nivel de significancia de 5% rejeitamos
+#a igualdade entre as medias QI,
+#vamos entao buscar quem é a diferente
+
+#5
