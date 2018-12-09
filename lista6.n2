@@ -1,0 +1,7 @@
+
+tabela = matrix(c(51,33,16,58,29,13,48,42,30,26,38,16),nrow = 4,byrow = T)
+tabela
+chisq.test(tabela,correct = F)                
+#usando um nivel de significancia de 1%, por exemplo,
+#rejeitamos a h0, ou seja a evidencias que 
+#o nao exista independencia entre as o tipo de cancer com o tipo de tratamento
