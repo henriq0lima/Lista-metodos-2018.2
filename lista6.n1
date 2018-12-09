@@ -1,0 +1,7 @@
+tabela = table(rep(c('seg','ter','qua','qui','sex','sab','dom'),c(20,10,10,15,30,20,35)))
+tabela
+esp=rep(1/7,7)
+chisq.test(tabela,p = esp,correct = F)
+#usando um nivel de significancia de 1%, por exemplo,
+#rejeitamos a h0, ou seja a evidencias que 
+#o numero de acidentes na rua nao sao iguais em todos os dias
